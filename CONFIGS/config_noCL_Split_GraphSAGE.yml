@@ -1,0 +1,69 @@
+model: model.dgn.graphsage_clgrl.GraphSAGESuperpixels
+experiment: experiment.continual_ewc_task.ContinualEWCTask
+n_tasks: 5
+higher_results_are_better: True
+log_every: 1
+dataset-getter: data.provider.ContinualSplitDataProvider
+device: cuda
+num_dataloader_workers: 4  # > 0 only with --debug option and GPU device
+pin_memory: True  # True only with --debug option and GPU device
+grid:
+  supervised_config:
+    checkpoint: True
+    num_layers:
+      - 2
+      - 4
+    hidden_units:
+      - 64
+      - 128
+    aggregation:
+      - mean
+    batch_size:
+      - 128
+    epochs:
+      - 1000
+    optimizer:
+      -
+        class_name: training.callback.optimizer.EWCOptimizer
+        args:
+          ewc_mode:
+            - sum
+            # - separate
+          normalize_importance:
+            - False
+          optimizer_class_name: torch.optim.Adam
+          lr:
+            - 0.001
+          weight_decay: 0.
+    scheduler:
+      - null
+    loss:
+      -
+        class_name: training.callback.loss.EWCLoss
+        args:
+          ewc_lambda: 0.0
+    scorer:
+      - training.callback.score.MulticlassAccuracyScore
+    predictor:
+      - model.predictor.graph_predictor.GraphSAGEGraphPredictor
+    wrapper:
+      - training.engine.TrainingEngine
+    gradient_clipping:
+      - null
+    dropout:
+      - 0.
+    early_stopper:
+      -
+        class_name:
+          - training.callback.early_stopping.PatienceEarlyStopper
+        args:
+          patience:
+            - 50
+          # Should be the name of the main_scorer in MultiScore
+          monitor: validation_Multiclass Accuracy # (train_,validation_)[name_of_the_scorer_or_loss_to_monitor]
+          mode: max
+          checkpoint: True
+    plotter:
+      - training.callback.plotter.Plotter
+    shuffle:
+      - True

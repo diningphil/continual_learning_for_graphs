@@ -1,0 +1,22 @@
+splitter:
+  root: SPLITS/
+  class_name: data.splitter.OGBGSplitter
+  args:
+    n_outer_folds: 1
+    n_inner_folds: 1
+    seed: 42
+    stratify: False  # keep splits as they are in the paper (do not shuffle nor use stratify)
+    shuffle: False
+    val_ratio: -1
+    test_ratio: -1
+dataset:
+  root: DATA/
+  class_name: data.dataset.OGBG
+  args:
+    root: DATA/
+    name: ogbg_ppa  # VERY IMPORTANT: USE UNDERSCORE, NOT DASH AS IN ORIGINAL INTERFACE
+  # useful for social datasets with no node features
+  transforms:
+      - class_name: data.transform.ConstantIfEmpty
+        args:
+          value: 0  # Replicate code found in https://github.com/snap-stanford/ogb/blob/master/examples/graphproppred/ppa/main_pyg.py

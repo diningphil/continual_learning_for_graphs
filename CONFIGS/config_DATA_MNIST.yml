@@ -1,0 +1,22 @@
+splitter:
+  root: SPLITS/
+  class_name: data.splitter.Splitter
+  args:
+    n_outer_folds: 1
+    n_inner_folds: 1
+    seed: 42
+    stratify: False  # keep splits as they are in the paper (do not shuffle nor use stratify)
+    shuffle: False
+    val_ratio: 0.0714285714285  # approx 5K samples out of 70K
+    test_ratio: 0.142857142857  # approx 10K samples out of 70K
+dataset:
+  root: DATA/
+  class_name: data.dataset.GNNBenchmarkDataset
+  args:
+    root: DATA/
+    name: MNIST
+  # useful for social datasets with no node features
+  #transforms:
+  #    - class_name: data.transform.ConstantIfEmpty
+  #      args:
+  #        value: 1
